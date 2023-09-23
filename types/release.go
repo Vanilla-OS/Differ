@@ -16,9 +16,9 @@ import (
 )
 
 type Package struct {
-	gorm.Model
-	Name    string
-	Version string
+	gorm.Model `json:"-"`
+	Name       string `json:"name"`
+	Version    string `json:"version"`
 }
 
 type PackageDiff struct {
@@ -27,11 +27,11 @@ type PackageDiff struct {
 }
 
 type Release struct {
-	gorm.Model
-	Digest   string
-	ImageID  uint // foreign key for Image
-	Date     time.Time
-	Packages []Package `gorm:"many2many:release_packages;"`
+	gorm.Model `json:"-"`
+	Digest     string    `json:"digest"`
+	ImageID    uint      `json:"-"` // foreign key for Image
+	Date       time.Time `json:"date"`
+	Packages   []Package `json:"packages" gorm:"many2many:release_packages;"`
 }
 
 // PackageDiff returns the difference in packages between two images, organized into

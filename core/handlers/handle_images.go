@@ -1,6 +1,12 @@
 package handlers
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/vanilla-os/differ/core"
+	"github.com/vanilla-os/differ/types"
+)
 
 /*
  * 	License: GPL-3.0-or-later
@@ -10,17 +16,43 @@ import "github.com/gin-gonic/gin"
  */
 
 func HandleGetImages(c *gin.Context) {
-	// TODO: Get list of all images being tracked
+	images, err := types.GetImages(core.DB)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, images)
 }
 
-func HandleGetLatestRelease(c *gin.Context) {
-	// TODO: Get latest release from image
+func HandleFindImage(c *gin.Context) {
+	image, err := types.GetImageByName(core.DB, c.Param("name"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"image": image})
 }
 
-func HandleGetRelease(c *gin.Context) {
-	// TODO: Get specific release from image
-}
+func HandleAddImage(c *gin.Context) {
+	var imageInput struct {
+		Name     string `json:"name" binding:"required"`
+		URL      string `json:"url" binding:"required"`
+		Releases []types.Release
+	}
 
-func HandleGetReleaseDiff(c *gin.Context) {
-	// TODO: Get diff betwenn two releases
+	if err := c.ShouldBindJSON(&imageInput); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	newImage := types.Image{
+		Name:     imageInput.Name,
+		URL:      imageInput.URL,
+		Releases: imageInput.Releases,
+	}
+	core.DB.Create(&newImage)
+
+	c.JSON(http.StatusOK, gin.H{"image": newImage})
 }

@@ -14,13 +14,22 @@ import (
 )
 
 func main() {
-	_, err := core.InitStorage("test.db")
+	err := core.InitStorage("test.db")
 	if err != nil {
 		panic("Failed to init storage: " + err.Error())
 	}
 
 	r := gin.Default()
+
+	// Endpoint to check if API is running
 	r.GET("/status", handlers.HandleStatus)
+
+	// Manipulate images
+	r.GET("/images", handlers.HandleGetImages)
+	r.POST("/images/new", handlers.HandleAddImage)
+	r.GET("/images/:name", handlers.HandleFindImage)
+
+	// Manipulate releases
 
 	r.Run()
 }

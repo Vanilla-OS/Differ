@@ -13,13 +13,17 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitStorage(storagePath string) (*gorm.DB, error) {
+var DB *gorm.DB
+
+func InitStorage(storagePath string) error {
 	db, err := gorm.Open(sqlite.Open(storagePath), &gorm.Config{})
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	db.AutoMigrate(&types.Image{}, &types.Release{})
 
-	return db, nil
+	DB = db
+
+	return nil
 }

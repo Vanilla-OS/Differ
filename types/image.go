@@ -14,10 +14,10 @@ import (
  */
 
 type Image struct {
-	gorm.Model
-	Name     string
-	URL      string
-	Releases []Release
+	gorm.Model `json:"-"`
+	Name       string    `json:"name"`
+	URL        string    `json:"url"`
+	Releases   []Release `json:"releases"`
 }
 
 func GetImages(db *gorm.DB) ([]Image, error) {
