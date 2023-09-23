@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vanilla-os/differ/core"
 	"github.com/vanilla-os/differ/types"
+	"gorm.io/gorm"
 )
 
 /*
@@ -22,7 +24,7 @@ func HandleGetImages(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, images)
+	c.JSON(http.StatusOK, gin.H{"images": images})
 }
 
 func HandleFindImage(c *gin.Context) {
@@ -41,10 +43,13 @@ func HandleAddImage(c *gin.Context) {
 		URL      string `json:"url" binding:"required"`
 		Releases []types.Release
 	}
-
 	if err := c.ShouldBindJSON(&imageInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	}
+
+	if len(imageInput.Releases) == 0 {
+		imageInput.Releases = []types.Release{}
 	}
 
 	newImage := types.Image{
@@ -52,7 +57,14 @@ func HandleAddImage(c *gin.Context) {
 		URL:      imageInput.URL,
 		Releases: imageInput.Releases,
 	}
-	core.DB.Create(&newImage)
+	if status := core.DB.Create(&newImage); status.Error != nil {
+		errorCode := http.StatusInternalServerError
+		if errors.Is(status.Error, gorm.ErrDuplicatedKey) {
+			errorCode = http.StatusBadRequest
+		}
+		c.JSON(errorCode, gin.H{"error": status.Error.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"image": newImage})
 }

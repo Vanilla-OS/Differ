@@ -22,13 +22,14 @@ type Package struct {
 }
 
 type PackageDiff struct {
-	Name                   string
-	OldVersion, NewVersion string
+	Name       string `json:"name"`
+	OldVersion string `json:"old_version,omitempty"`
+	NewVersion string `json:"new_version,omitempty"`
 }
 
 type Release struct {
 	gorm.Model `json:"-"`
-	Digest     string    `json:"digest"`
+	Digest     string    `json:"digest" gorm:"unique"`
 	ImageID    uint      `json:"-"` // foreign key for Image
 	Date       time.Time `json:"date"`
 	Packages   []Package `json:"packages" gorm:"many2many:release_packages;"`
@@ -48,18 +49,18 @@ func (re *Release) DiffPackages(other *Release) ([]PackageDiff, []PackageDiff, [
 	for _, pkg := range re.Packages {
 		pos := slices.IndexFunc(otherCopy, func(n Package) bool { return n.Name == pkg.Name })
 		if pos != -1 {
-			diff := PackageDiff{pkg.Name, pkg.Version, otherCopy[pos].Version}
+			diff := PackageDiff{pkg.Name, otherCopy[pos].Version, pkg.Version}
 			switch cmp.Compare(pkg.Version, otherCopy[pos].Version) {
 			case -1:
-				upgraded = append(upgraded, diff)
-			case 1:
 				downgraded = append(downgraded, diff)
+			case 1:
+				upgraded = append(upgraded, diff)
 			}
 
 			// Clear package from copy so we can later check for removed packages
 			otherCopy[pos] = Package{}
 		} else {
-			diff := PackageDiff{pkg.Name, pkg.Version, ""}
+			diff := PackageDiff{pkg.Name, "", pkg.Version}
 			added = append(removed, diff)
 		}
 	}
@@ -67,7 +68,7 @@ func (re *Release) DiffPackages(other *Release) ([]PackageDiff, []PackageDiff, [
 	for _, opkg := range otherCopy {
 		dummy := Package{}
 		if opkg != dummy {
-			diff := PackageDiff{opkg.Name, "", opkg.Version}
+			diff := PackageDiff{opkg.Name, opkg.Version, ""}
 			removed = append(removed, diff)
 		}
 	}

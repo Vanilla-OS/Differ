@@ -16,7 +16,7 @@ import (
 var DB *gorm.DB
 
 func InitStorage(storagePath string) error {
-	db, err := gorm.Open(sqlite.Open(storagePath), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(storagePath), &gorm.Config{TranslateError: true})
 	if err != nil {
 		return err
 	}

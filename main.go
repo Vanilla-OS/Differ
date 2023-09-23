@@ -26,10 +26,14 @@ func main() {
 
 	// Manipulate images
 	r.GET("/images", handlers.HandleGetImages)
-	r.POST("/images/new", handlers.HandleAddImage)
 	r.GET("/images/:name", handlers.HandleFindImage)
+	r.POST("/images/new", handlers.HandleAddImage)
 
 	// Manipulate releases
+	r.GET("/images/:name/diff", handlers.HandleGetReleaseDiff)
+	r.GET("/images/:name/latest", handlers.HandleGetLatestRelease)
+	r.GET("/images/:name/:digest", handlers.HandleFindRelease)
+	r.POST("/images/:name/new", handlers.HandleAddRelease)
 
 	r.Run()
 }
