@@ -1,5 +1,4 @@
-all: differ
-rebuild: clean differ
+all: clean differ
 
 differ:
 	go build -o differ .

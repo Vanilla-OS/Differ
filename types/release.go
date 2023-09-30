@@ -9,7 +9,6 @@ package types
 
 import (
 	"cmp"
-	"fmt"
 	"regexp"
 	"slices"
 	"time"
@@ -66,8 +65,6 @@ func compareVersions(a, b string) int {
 	for _, comp := range compOrder {
 		aValue, aOk := aMatch[comp]
 		bValue, bOk := bMatch[comp]
-		fmt.Printf("A: %v; B: %v\n", aOk, bOk)
-		fmt.Printf("%s: '%s' -> '%s'\n", comp, aValue, bValue)
 		// If neither version has component or if they equal
 		if !aOk && !bOk {
 			continue
