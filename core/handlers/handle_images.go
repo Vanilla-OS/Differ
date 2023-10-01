@@ -1,5 +1,12 @@
 package handlers
 
+/*
+ * 	License: GPL-3.0-or-later
+ * 	Authors:
+ * 		Mateus Melchiades <matbme@duck.com>
+ * 	Copyright: 2023
+ */
+
 import (
 	"errors"
 	"net/http"
@@ -9,13 +16,6 @@ import (
 	"github.com/vanilla-os/differ/types"
 	"gorm.io/gorm"
 )
-
-/*
- * 	License: GPL-3.0-or-later
- * 	Authors:
- * 		Mateus Melchiades <matbme@duck.com>
- * 	Copyright: 2023
- */
 
 func HandleGetImages(c *gin.Context) {
 	images, err := types.GetImages(core.DB)

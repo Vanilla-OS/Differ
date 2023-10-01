@@ -1,18 +1,18 @@
 package types
 
-import (
-	"fmt"
-	"sort"
-
-	"gorm.io/gorm"
-)
-
 /*
  * 	License: GPL-3.0-or-later
  * 	Authors:
  * 		Mateus Melchiades <matbme@duck.com>
  * 	Copyright: 2023
  */
+
+import (
+	"fmt"
+	"sort"
+
+	"gorm.io/gorm"
+)
 
 type Image struct {
 	gorm.Model `json:"-"`
