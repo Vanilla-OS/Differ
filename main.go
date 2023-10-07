@@ -8,28 +8,30 @@ package main
  */
 
 import (
+	"errors"
+
 	"github.com/gin-gonic/gin"
 	"github.com/vanilla-os/differ/core"
 	"github.com/vanilla-os/differ/core/handlers"
 )
 
-func main() {
+func setupRouter() (*gin.Engine, error) {
 	// Initialize storage database
 	err := core.InitStorage("test.db")
 	if err != nil {
-		panic("Failed to init storage: " + err.Error())
+		return nil, errors.New("Failed to init storage: " + err.Error())
 	}
 
 	// Initialize cache
 	err = core.InitCache()
 	if err != nil {
-		panic("Failed to init cache: " + err.Error())
+		return nil, errors.New("Failed to init cache: " + err.Error())
 	}
 
 	// Fetches authentications from storage
 	auths, err := core.FetchAuthorizations()
 	if err != nil {
-		panic("Failed to fetch authorizations from storage: " + err.Error())
+		return nil, errors.New("Failed to fetch authorizations from storage: " + err.Error())
 	}
 
 	// If auths is empty, we run the API in "read-only" mode.
@@ -72,5 +74,14 @@ func main() {
 		}
 	}
 
-	r.Run()
+	return r, nil
+}
+
+func main() {
+	router, err := setupRouter()
+	if err != nil {
+		panic(err)
+	}
+
+	router.Run()
 }
