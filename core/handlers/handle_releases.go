@@ -8,7 +8,10 @@ package handlers
  */
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -103,6 +106,32 @@ func HandleGetReleaseDiff(c *gin.Context) {
 		return
 	}
 
+	cacheKey := fmt.Sprintf("%s-%s", diffInput.OldDigest, diffInput.NewDigest)
+	cacheDiff, _ := core.CacheManager.Get(context.Background(), cacheKey)
+
+	// Cache hit
+	if cacheDiff != nil {
+		fmt.Println("Cache hit!")
+		var diff struct {
+			Added, Upgraded, Downgraded, Removed []types.PackageDiff
+		}
+		err := json.Unmarshal(cacheDiff, &diff)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"_old_digest": diffInput.OldDigest,
+			"_new_digest": diffInput.NewDigest,
+			"added":       diff.Added,
+			"upgraded":    diff.Upgraded,
+			"downgraded":  diff.Downgraded,
+			"removed":     diff.Removed,
+		})
+		return
+	}
+
 	oldRelease, err := image.GetReleaseByDigest(core.DB, diffInput.OldDigest)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -113,8 +142,28 @@ func HandleGetReleaseDiff(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	added, upgraded, downgraded, removed := newRelease.DiffPackages(oldRelease)
+
+	// Add diff to cache for future queries
+	cacheDiffEntry := struct {
+		Added, Upgraded, Downgraded, Removed []types.PackageDiff
+	}{
+		Added:      added,
+		Upgraded:   upgraded,
+		Downgraded: downgraded,
+		Removed:    removed,
+	}
+	cacheBytes, err := json.Marshal(cacheDiffEntry)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	err = core.CacheManager.Set(context.Background(), cacheKey, cacheBytes)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"_old_digest": diffInput.OldDigest,
 		"_new_digest": diffInput.NewDigest,

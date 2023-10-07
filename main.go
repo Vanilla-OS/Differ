@@ -14,10 +14,16 @@ import (
 )
 
 func main() {
-	// Initializes storage database
+	// Initialize storage database
 	err := core.InitStorage("test.db")
 	if err != nil {
 		panic("Failed to init storage: " + err.Error())
+	}
+
+	// Initialize cache
+	err = core.InitCache()
+	if err != nil {
+		panic("Failed to init cache: " + err.Error())
 	}
 
 	// Fetches authentications from storage
