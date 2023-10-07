@@ -42,6 +42,7 @@ func main() {
 	}
 
 	r := gin.Default()
+	r.SetTrustedProxies(nil)
 
 	// Endpoint to check if API is running
 	r.GET("/status", handlers.HandleStatus)
