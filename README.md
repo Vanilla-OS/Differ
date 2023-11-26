@@ -1,6 +1,6 @@
 # Differ
 
-Differ is a REST-API for retrieving package changes between immages on immutable Linux distributions.
+Differ is a REST-API for retrieving package changes between images on immutable Linux distributions.
 It was designed for allowing the user to visualize changes in package versions in [Vanilla OS](https://vanillaos.org), but this tool can be used by any distribution without any changes to the code.
 
 ## Build and Setup
@@ -33,7 +33,7 @@ When setting up Differ in production, you must `export GIN_MODE=release` before 
 
 ## Endpoints
 
-#### Status
+### Status
 
 Simple check to see if the server is running correctly.
 
@@ -63,13 +63,14 @@ Creates a new image in the dabatase. Every release (see subsection below) is att
 *Endpoint:* `http://[base_url]/images/new`
 
 *Parameters:*
+
 - *Name:* Image name
 - *URL:* Where the image is hosted or its repository. For information purposes only.
 
 ```json
 {
-	"name": "pico",
-	"url": "https://github.com/Vanilla-OS/pico-image"
+    "name": "pico",
+    "url": "https://github.com/Vanilla-OS/pico-image"
 }
 ```
 
@@ -93,7 +94,7 @@ Retrieves information about an image given its name.
 {
     "image": {
         "name": "pico",
-	    "url": "https://github.com/Vanilla-OS/pico-image",
+        "url": "https://github.com/Vanilla-OS/pico-image",
         "releases": [
             ...
         ]
@@ -147,13 +148,14 @@ Creates a new release for the given image.
 *Endpoint:*`http://[base_url]/images/[image]/new`
 
 *Parameters:*
+
 - *Digest:* Image digest
 - *Packages:* List of package names and versions in the current release. `get_all_packages.py` contains a script for extracting the list from a Debian-based distribution.
 
 ```json
 {
-	"digest": "sha256:a99e4593b23fd07e3761639e9db38c0315e198d6e39dad6070e0e0e88be3de0d",
-	"packages": [
+    "digest": "sha256:a99e4593b23fd07e3761639e9db38c0315e198d6e39dad6070e0e0e88be3de0d",
+    "packages": [
         {
             "name": "apt",
             "version": "2.7.3"
@@ -224,6 +226,7 @@ The most important endpoint in the API. Given two digests, generates a list of c
 *Endpoint:* `http://[base_url]/images/[image]/diff`
 
 *Parameters:*
+
 - *Old digest:* Digest of the older image, which is usually the image the user is currently on.
 - *New digest:* Digest of the newer image, which is usually the image the user wants to update to.
 
