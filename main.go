@@ -9,6 +9,7 @@ package main
 
 import (
 	"errors"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vanilla-os/differ/core"
@@ -17,7 +18,7 @@ import (
 
 func setupRouter() (*gin.Engine, error) {
 	// Initialize storage database
-	err := core.InitStorage("test.db")
+	err := core.InitStorage(os.Args[1])
 	if err != nil {
 		return nil, errors.New("Failed to init storage: " + err.Error())
 	}
