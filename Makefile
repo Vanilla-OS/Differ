@@ -1,7 +1,7 @@
 all: clean differ
 
 differ:
-	go build -o differ .
+	go build -o differ -tags="sonic avx" .
 
 .PHONY: clean
 

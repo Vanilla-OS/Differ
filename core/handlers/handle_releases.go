@@ -9,12 +9,12 @@ package handlers
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/gin-gonic/gin"
 	"github.com/vanilla-os/differ/core"
 	"github.com/vanilla-os/differ/types"
@@ -90,13 +90,6 @@ func HandleAddRelease(c *gin.Context) {
 }
 
 func HandleGetReleaseDiff(c *gin.Context) {
-	imageName := c.Param("name")
-	image, err := types.GetImageByName(core.DB, imageName)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
 	var diffInput struct {
 		OldDigest string `json:"old_digest" binding:"required"`
 		NewDigest string `json:"new_digest" binding:"required"`
@@ -111,27 +104,31 @@ func HandleGetReleaseDiff(c *gin.Context) {
 
 	// Cache hit
 	if cacheDiff != nil {
-		fmt.Println("Cache hit!")
 		var diff struct {
+			OldDigest                            string `json:"_old_digest"`
+			NewDigest                            string `json:"_new_digest"`
 			Added, Upgraded, Downgraded, Removed []types.PackageDiff
 		}
-		err := json.Unmarshal(cacheDiff, &diff)
+		err := sonic.Unmarshal(cacheDiff, &diff)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{
-			"_old_digest": diffInput.OldDigest,
-			"_new_digest": diffInput.NewDigest,
-			"added":       diff.Added,
-			"upgraded":    diff.Upgraded,
-			"downgraded":  diff.Downgraded,
-			"removed":     diff.Removed,
-		})
+		diff.OldDigest = diffInput.OldDigest
+		diff.NewDigest = diffInput.NewDigest
+
+		c.JSON(http.StatusOK, diff)
 		return
 	}
 
+	// Diff not in cache. Generate diff and store for future queries.
+	imageName := c.Param("name")
+	image, err := types.GetImageByName(core.DB, imageName)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	oldRelease, err := image.GetReleaseByDigest(core.DB, diffInput.OldDigest)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -144,7 +141,6 @@ func HandleGetReleaseDiff(c *gin.Context) {
 	}
 	added, upgraded, downgraded, removed := newRelease.DiffPackages(oldRelease)
 
-	// Add diff to cache for future queries
 	cacheDiffEntry := struct {
 		Added, Upgraded, Downgraded, Removed []types.PackageDiff
 	}{
@@ -153,7 +149,7 @@ func HandleGetReleaseDiff(c *gin.Context) {
 		Downgraded: downgraded,
 		Removed:    removed,
 	}
-	cacheBytes, err := json.Marshal(cacheDiffEntry)
+	cacheBytes, err := sonic.Marshal(cacheDiffEntry)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
