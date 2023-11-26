@@ -37,11 +37,11 @@ When setting up Differ in production, you must `export GIN_MODE=release` before 
 
 Simple check to see if the server is running correctly.
 
-**Endpoint:** `http://[base_url]/status`
+*Endpoint:* `http://[base_url]/status`
 
-**Parameters:** None
+*Parameters:* None
 
-**Returns:**
+*Returns:*
 
 - `200 OK` on success.
 
@@ -60,9 +60,9 @@ For example, a distro can ship both GNOME and a KDE versions as separate images,
 
 Creates a new image in the dabatase. Every release (see subsection below) is attached to an image.
 
-**Endpoint:** `http://[base_url]/images/new`
+*Endpoint:* `http://[base_url]/images/new`
 
-**Parameters:**
+*Parameters:*
 - *Name:* Image name
 - *URL:* Where the image is hosted or its repository. For information purposes only.
 
@@ -73,7 +73,7 @@ Creates a new image in the dabatase. Every release (see subsection below) is att
 }
 ```
 
-**Returns:**
+*Returns:*
 
 - `200 OK` on success.
 
@@ -81,11 +81,11 @@ Creates a new image in the dabatase. Every release (see subsection below) is att
 
 Retrieves information about an image given its name.
 
-**Endpoint:** `http://[base_url]/images/[name]`
+**Endpoint:* `http://[base_url]/images/[name]`
 
-**Parameters:** None
+*Parameters:* None
 
-**Returns:**
+*Returns:*
 
 - `200 OK` on success, alongside the image information.
 
@@ -107,11 +107,11 @@ Retrieves information about an image given its name.
 
 Retrieves information about all images.
 
-**Endpoint:** `http://[base_url]/images`
+*Endpoint:* `http://[base_url]/images`
 
-**Parameters:** None
+*Parameters:* None
 
-**Returns:**
+*Returns:*
 
 - `200 OK` on success, alongside the images information.
 
@@ -144,9 +144,9 @@ A release is a new version of some image, where packages can be added, removed, 
 
 Creates a new release for the given image.
 
-**Endpoint:** `http://[base_url]/images/[image]/new`
+*Endpoint:*`http://[base_url]/images/[image]/new`
 
-**Parameters:**
+*Parameters:*
 - *Digest:* Image digest
 - *Packages:* List of package names and versions in the current release. `get_all_packages.py` contains a script for extracting the list from a Debian-based distribution.
 
@@ -163,7 +163,7 @@ Creates a new release for the given image.
 }
 ```
 
-**Returns:**
+*Returns:*
 
 - `200 OK` on success.
 
@@ -171,11 +171,11 @@ Creates a new release for the given image.
 
 Retrieves the most recent release from the image.
 
-**Endpoint:** `http://[base_url]/[image]/latest`
+*Endpoint:* `http://[base_url]/[image]/latest`
 
-**Parameters:** None
+*Parameters:* None
 
-**Returns:**
+*Returns:*
 
 - `200 OK` on success, alongside the release information.
 
@@ -195,11 +195,11 @@ Retrieves the most recent release from the image.
 
 Searches for a specific release by its digest.
 
-**Endpoint:** `http://[base_url]/[image]/[digest]`
+*Endpoint:* `http://[base_url]/[image]/[digest]`
 
-**Parameters:** None
+*Parameters:* None
 
-**Returns:**
+*Returns:*
 
 - `200 OK` on success, alongside the release information.
 
@@ -221,9 +221,9 @@ Searches for a specific release by its digest.
 
 The most important endpoint in the API. Given two digests, generates a list of changed packages. This information is cached so future queries are nearly instant.
 
-**Endpoint:** `http://[base_url]/images/[image]/diff`
+*Endpoint:* `http://[base_url]/images/[image]/diff`
 
-**Parameters:**
+*Parameters:*
 - *Old digest:* Digest of the older image, which is usually the image the user is currently on.
 - *New digest:* Digest of the newer image, which is usually the image the user wants to update to.
 
@@ -234,7 +234,7 @@ The most important endpoint in the API. Given two digests, generates a list of c
 }
 ```
 
-**Returns:**
+*Returns:*
 
 - `200 OK` on success, alongside the modified packages.
 
