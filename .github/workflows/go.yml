@@ -43,7 +43,7 @@ jobs:
     - name: Install test dependencies
       run: |
         apt-get update
-        apt-get install make
+        apt-get install make sqlite3
 
     - name: Test
       run: |
