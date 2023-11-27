@@ -3,8 +3,6 @@ LABEL maintainer="Mateus Melchiades"
 
 WORKDIR /home/user
 
-ARG DEBIAN_FRONTEND=noninteractive
-
 # Install dependencies
 RUN apk add --update gcc musl-dev sqlite make
 

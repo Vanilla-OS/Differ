@@ -1,0 +1,19 @@
+name: Image
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build image
+      run: docker image build -f Containerfile --tag ghcr.io/vanilla-os/differ:main .
+
+    - name: Publish image
+      run: |
+        docker login ghcr.io -u ${{ env.REGISTRY_USER }} -p ${{ env.REGISTRY_PASSWORD }}
+        docker image push "ghcr.io/vanilla-os/differ:main"
