@@ -9,7 +9,9 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vanilla-os/differ/core"
@@ -17,6 +19,28 @@ import (
 )
 
 func setupRouter(dbPath string) (*gin.Engine, error) {
+	// Create database if it doesn't exist
+	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
+		dbUser, ok := os.LookupEnv("admin_user")
+		if !ok {
+			return nil, errors.New("admin_user environment variable not found")
+		}
+
+		dbPass, ok := os.LookupEnv("admin_password")
+		if !ok {
+			return nil, errors.New("admin_user environment variable not found")
+		}
+
+		err = exec.Command(
+			"sh",
+			"-c",
+			fmt.Sprintf("sqlite3 %s 'create table auth(\"ID\" INTEGER, name, pass TEXT, PRIMARY KEY(\"ID\")); insert into auth values(1, \"%s\", \"%s\");'", dbPath, dbUser, dbPass),
+		).Run()
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	// Initialize storage database
 	err := core.InitStorage(dbPath)
 	if err != nil {
