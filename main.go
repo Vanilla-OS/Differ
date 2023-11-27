@@ -16,9 +16,9 @@ import (
 	"github.com/vanilla-os/differ/core/handlers"
 )
 
-func setupRouter() (*gin.Engine, error) {
+func setupRouter(dbPath string) (*gin.Engine, error) {
 	// Initialize storage database
-	err := core.InitStorage(os.Args[1])
+	err := core.InitStorage(dbPath)
 	if err != nil {
 		return nil, errors.New("Failed to init storage: " + err.Error())
 	}
@@ -79,7 +79,7 @@ func setupRouter() (*gin.Engine, error) {
 }
 
 func main() {
-	router, err := setupRouter()
+	router, err := setupRouter(os.Args[1])
 	if err != nil {
 		panic(err)
 	}
