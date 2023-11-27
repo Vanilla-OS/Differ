@@ -4,8 +4,8 @@ on:
   push:
     branches: [ "main" ]
   pull_request_target:
-        branches: [ "main" ]
-        types: [opened, synchronize, reopened]
+    branches: [ "main" ]
+    types: [opened, synchronize, reopened]
 
 jobs:
   build:
@@ -14,9 +14,16 @@ jobs:
       image: ghcr.io/vanilla-os/pico:main
     steps:
     - uses: actions/checkout@v4
+
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
         go-version: 1.21
+
+    - name: Install dependencies
+      run: |
+        apt-get update
+        apt-get install make
+
     - name: Build
       run: make
