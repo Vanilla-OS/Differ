@@ -11,6 +11,7 @@ import (
 	"cmp"
 	"regexp"
 	"slices"
+	"strconv"
 	"time"
 
 	"gorm.io/gorm"
@@ -85,7 +86,15 @@ func compareVersions(a, b string) int {
 		}
 
 		// If both have, do regular compare
-		abComp := cmp.Compare(aValue, bValue)
+		aValueInt, aErr := strconv.Atoi(aValue)
+		bValueInt, bErr := strconv.Atoi(bValue)
+
+		var abComp int
+		if aErr == nil && bErr == nil {
+			abComp = cmp.Compare(aValueInt, bValueInt)
+		} else {
+			abComp = cmp.Compare(aValue, bValue)
+		}
 		if abComp == 0 {
 			continue
 		}
