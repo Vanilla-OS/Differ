@@ -177,6 +177,9 @@ github.com/twitchyliquid64/golang-asm/unsafeheader
 # github.com/ugorji/go/codec v1.2.11
 ## explicit; go 1.11
 github.com/ugorji/go/codec
+# github.com/vanilla-os/differ/diff v0.0.0-00010101000000-000000000000 => ./diff
+## explicit; go 1.21.4
+github.com/vanilla-os/differ/diff
 # golang.org/x/arch v0.6.0
 ## explicit; go 1.18
 golang.org/x/arch/x86/x86asm
@@ -254,3 +257,4 @@ gorm.io/gorm/logger
 gorm.io/gorm/migrator
 gorm.io/gorm/schema
 gorm.io/gorm/utils
+# github.com/vanilla-os/differ/diff => ./diff

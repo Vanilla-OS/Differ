@@ -17,6 +17,7 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/gin-gonic/gin"
 	"github.com/vanilla-os/differ/core"
+	"github.com/vanilla-os/differ/diff"
 	"github.com/vanilla-os/differ/types"
 	"gorm.io/gorm"
 )
@@ -107,7 +108,7 @@ func HandleGetReleaseDiff(c *gin.Context) {
 		var diff struct {
 			OldDigest                            string `json:"_old_digest"`
 			NewDigest                            string `json:"_new_digest"`
-			Added, Upgraded, Downgraded, Removed []types.PackageDiff
+			Added, Upgraded, Downgraded, Removed []diff.PackageDiff
 		}
 		err := sonic.Unmarshal(cacheDiff, &diff)
 		if err != nil {
@@ -142,7 +143,7 @@ func HandleGetReleaseDiff(c *gin.Context) {
 	added, upgraded, downgraded, removed := newRelease.DiffPackages(oldRelease)
 
 	cacheDiffEntry := struct {
-		Added, Upgraded, Downgraded, Removed []types.PackageDiff
+		Added, Upgraded, Downgraded, Removed []diff.PackageDiff
 	}{
 		Added:      added,
 		Upgraded:   upgraded,
