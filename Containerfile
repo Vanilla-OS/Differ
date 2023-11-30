@@ -7,14 +7,14 @@ WORKDIR /home/user
 RUN apk add --update gcc musl-dev sqlite make
 
 # Copy project files and build
-COPY main.go go.mod go.sum Makefile /home/user/
+COPY main.go go.mod go.sum go.work Makefile /home/user/
 COPY core /home/user/core/
 COPY types /home/user/types/
 COPY vendor /home/user/vendor/
 RUN make
 
 # Cleanup
-RUN rm -rf main.go go.mod go.sum Makefile core/ types/ vendor/
+RUN rm -rf main.go go.mod go.sum go.work Makefile core/ types/ vendor/
 
 EXPOSE 8080
 
