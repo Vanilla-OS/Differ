@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"regexp"
 	"strconv"
+	"sync"
 )
 
 type Package map[string]string
@@ -82,18 +83,27 @@ func CompareVersions(a, b string) int {
 	return compResult
 }
 
-func processPackage(pkg, oldVersion, newVersion string, c chan<- struct{ PackageDiff; int }, wg *sync.WaitGroup) {
+func processPackage(pkg, oldVersion, newVersion string, c chan<- struct {
+	PackageDiff
+	int
+}, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	result := CompareVersions(oldVersion, newVersion)
-	c <- struct{ PackageDiff; int }{PackageDiff{pkg, newVersion, oldVersion}, result}
+	c <- struct {
+		PackageDiff
+		int
+	}{PackageDiff{pkg, newVersion, oldVersion}, result}
 }
 
 // PackageDiff returns the difference in packages between two images, organized into
 // four slices: Added, Upgraded, Downgraded, and Removed packages, respectively.
 func DiffPackages(oldPackages, newPackages Package) ([]PackageDiff, []PackageDiff, []PackageDiff, []PackageDiff) {
 	var wg sync.WaitGroup
-	c := make(chan struct{ PackageDiff; int }, len(oldPackages))
+	c := make(chan struct {
+		PackageDiff
+		int
+	}, len(oldPackages))
 
 	for pkg, oldVersion := range oldPackages {
 		wg.Add(1)
@@ -101,9 +111,24 @@ func DiffPackages(oldPackages, newPackages Package) ([]PackageDiff, []PackageDif
 		if newVersion, ok := newPackages[pkg]; ok {
 			go processPackage(pkg, oldVersion, newVersion, c, &wg)
 		} else {
-			go processPackage(pkg, oldVersion, "", c, &wg)
+			c <- struct {
+				PackageDiff
+				int
+			}{PackageDiff{pkg, oldVersion, ""}, 2}
+			wg.Done()
 		}
 	}
+
+	removed := []PackageDiff{}
+	wg.Add(1)
+	go func() {
+		for pkg, version := range newPackages {
+			if _, ok := oldPackages[pkg]; !ok {
+				removed = append(removed, PackageDiff{pkg, "", version})
+			}
+		}
+		wg.Done()
+	}()
 
 	go func() {
 		wg.Wait()
@@ -113,8 +138,6 @@ func DiffPackages(oldPackages, newPackages Package) ([]PackageDiff, []PackageDif
 	added := []PackageDiff{}
 	upgraded := []PackageDiff{}
 	downgraded := []PackageDiff{}
-	removed := []PackageDiff{}
-
 	for pkgResult := range c {
 		switch pkgResult.int {
 		case -1:
@@ -124,11 +147,6 @@ func DiffPackages(oldPackages, newPackages Package) ([]PackageDiff, []PackageDif
 		case 2:
 			added = append(added, pkgResult.PackageDiff)
 		}
-	}
-
-	// Collect removed packages
-	for pkg, version := range newPackages {
-		removed = append(removed, PackageDiff{pkg, "", version})
 	}
 
 	return added, upgraded, downgraded, removed
