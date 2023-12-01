@@ -9,6 +9,7 @@ RUN apk add --update gcc musl-dev sqlite make
 # Copy project files and build
 COPY main.go go.mod go.sum go.work Makefile /home/user/
 COPY core /home/user/core/
+COPY diff /home/user/diff/
 COPY types /home/user/types/
 COPY vendor /home/user/vendor/
 RUN make
