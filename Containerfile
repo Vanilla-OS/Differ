@@ -19,4 +19,4 @@ RUN rm -rf main.go go.mod go.sum go.work Makefile core/ types/ vendor/
 
 EXPOSE 8080
 
-CMD ["/home/user/differ", "differ.db"]
+CMD ["/home/user/differ"]
