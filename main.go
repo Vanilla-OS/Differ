@@ -103,7 +103,16 @@ func setupRouter(dbPath string) (*gin.Engine, error) {
 }
 
 func main() {
-	router, err := setupRouter(os.Args[1])
+	var dbPath string
+	if len(os.Args) > 1 {
+		dbPath = os.Args[1]
+	} else if dbPathArg, ok := os.LookupEnv("db_path"); ok {
+		dbPath = dbPathArg
+	} else {
+		panic("No path to DB was provided. You must either pass it as a positional argument or by setting the 'db_path' environment variable")
+	}
+
+	router, err := setupRouter(dbPath)
 	if err != nil {
 		panic(err)
 	}
