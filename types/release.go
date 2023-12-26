@@ -25,7 +25,7 @@ type Release struct {
 	Digest     string    `json:"digest" gorm:"unique"`
 	ImageID    uint      `json:"-"` // foreign key for Image
 	Date       time.Time `json:"date"`
-	Packages   []Package `json:"packages" gorm:"many2many:release_packages;"`
+	Packages   []Package `json:"packages,omitempty" gorm:"many2many:release_packages;"`
 }
 
 func (re *Release) DiffPackages(other *Release) ([]diff.PackageDiff, []diff.PackageDiff, []diff.PackageDiff, []diff.PackageDiff) {

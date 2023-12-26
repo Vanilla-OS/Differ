@@ -18,20 +18,25 @@ type Image struct {
 	gorm.Model `json:"-"`
 	Name       string    `json:"name" gorm:"unique"`
 	URL        string    `json:"url" gorm:"unique"`
-	Releases   []Release `json:"releases"`
+	Releases   []Release `json:"releases,omitempty"`
 }
 
 func GetImages(db *gorm.DB) ([]Image, error) {
 	var images []Image
-	err := db.Model(&Image{}).Preload("Releases").Preload("Releases.Packages").Find(&images).Error
+	err := db.Model(&Image{}).Find(&images).Error
 	return images, err
 }
 
 func GetImageByName(db *gorm.DB, name string) (Image, error) {
 	var image Image
-	err := db.Preload("Releases").Preload("Releases.Packages").First(&image, "name = ?", name).Error
+	err := db.First(&image, "name = ?", name).Error
 	if err == gorm.ErrRecordNotFound {
 		return image, fmt.Errorf("no image found with name %s", name)
+	}
+
+	err = db.Where("image_id = ?", image.ID).Find(&image.Releases).Error
+	if err != nil {
+		return image, fmt.Errorf("failed to get releases for %s: %v", name, err)
 	}
 
 	return image, err
