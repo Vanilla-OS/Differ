@@ -12,7 +12,7 @@ Using the `sqlite3` tool, run the following commands:
 ```sh
 $ sqlite3 /path/to/database.db
 sqlite> create table auth("ID" INTEGER, name, pass TEXT, PRIMARY KEY("ID"));
-sqlite> insert into auth values(1, "admin_user", "admin_password"); # Replace user and password with something secure
+sqlite> insert into auth values(1, 'admin_user', 'admin_password'); # Replace user and password with something secure
 ```
 
 If everything was set up correctly, the auth table should look like this:
