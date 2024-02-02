@@ -173,7 +173,7 @@ Creates a new release for the given image.
 
 Retrieves the most recent release from the image.
 
-*Endpoint:* `http://[base_url]/[image]/latest`
+*Endpoint:* `http://[base_url]/images/[image]/latest`
 
 *Parameters:* None
 
@@ -197,7 +197,7 @@ Retrieves the most recent release from the image.
 
 Searches for a specific release by its digest.
 
-*Endpoint:* `http://[base_url]/[image]/[digest]`
+*Endpoint:* `http://[base_url]/images/[image]/[digest]`
 
 *Parameters:* None
 
