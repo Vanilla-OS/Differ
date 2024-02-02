@@ -12,7 +12,7 @@ Using the `sqlite3` tool, run the following commands:
 ```sh
 $ sqlite3 /path/to/database.db
 sqlite> create table auth("ID" INTEGER, name, pass TEXT, PRIMARY KEY("ID"));
-sqlite> insert into auth values(1, "admin_user", "admin_password"); # Replace user and password with something secure
+sqlite> insert into auth values(1, 'admin_user', 'admin_password'); # Replace user and password with something secure
 ```
 
 If everything was set up correctly, the auth table should look like this:
@@ -173,7 +173,7 @@ Creates a new release for the given image.
 
 Retrieves the most recent release from the image.
 
-*Endpoint:* `http://[base_url]/[image]/latest`
+*Endpoint:* `http://[base_url]/images/[image]/latest`
 
 *Parameters:* None
 
@@ -197,7 +197,7 @@ Retrieves the most recent release from the image.
 
 Searches for a specific release by its digest.
 
-*Endpoint:* `http://[base_url]/[image]/[digest]`
+*Endpoint:* `http://[base_url]/images/[image]/[digest]`
 
 *Parameters:* None
 
