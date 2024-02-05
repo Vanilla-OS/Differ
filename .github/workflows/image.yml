@@ -34,5 +34,5 @@ jobs:
         context: .
         file: Containerfile
         platforms: linux/amd64,linux/arm64
-        push: ${{ github.repository == 'simon511000/Differ' && github.ref == 'refs/heads/main' }}
-        tags: ghcr.io/simon511000/differ:main
+        push: ${{ github.repository == 'Vanilla-OS/Differ' && github.ref == 'refs/heads/main' }}
+        tags: ghcr.io/vanilla-os/differ:main
