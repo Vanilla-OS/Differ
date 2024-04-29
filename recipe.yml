@@ -1,0 +1,47 @@
+name: Differ
+id: differ
+stages:
+  - id: build
+    base: docker.io/golang:1.21-alpine
+    singlelayer: false
+    labels:
+      maintainer: Mateus Melchiades
+    cmd: ["/home/user/differ"]
+    expose:
+      "8080": ""
+    modules:
+      - name: init
+        type: shell
+        source:
+          type: git
+          url: https://github.com/Vanilla-OS/Differ
+          branch: main
+          commit: latest
+        commands:
+          - mkdir /home/user
+          - cp /sources/init/main.go /home/user/
+          - cp /sources/init/go.mod /home/user/
+          - cp /sources/init/go.sum /home/user/
+          - cp /sources/init/go.work /home/user/
+          - cp /sources/init/Makefile /home/user/
+          - mv /sources/init/core /home/user/core/
+          - mv /sources/init/diff /home/user/diff/
+          - mv /sources/init/types /home/user/types/
+          - mv /sources/init/vendor /home/user/vendor/
+          - rm -rf /sources/init
+
+      - name: install-deps
+        type: shell
+        commands:
+          - apk add gcc musl-dev sqlite make
+
+      - name: build
+        type: shell
+        commands:
+          - cd /home/user
+          - make
+      
+      - name: cleanup
+        type: shell
+        commands:
+          - rm -rf main.go go.mod go.sum go.work Makefile core/ types/ vendor/
