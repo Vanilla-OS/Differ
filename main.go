@@ -28,13 +28,13 @@ func setupRouter(dbPath string) (*gin.Engine, error) {
 
 		dbPass, ok := os.LookupEnv("admin_password")
 		if !ok {
-			return nil, errors.New("admin_user environment variable not found")
+			return nil, errors.New("admin_password environment variable not found")
 		}
 
 		err = exec.Command(
 			"sh",
 			"-c",
-			fmt.Sprintf("sqlite3 %s 'create table auth(\"ID\" INTEGER, name, pass TEXT, PRIMARY KEY(\"ID\")); insert into auth values(1, \"%s\", \"%s\");'", dbPath, dbUser, dbPass),
+			fmt.Sprintf("sqlite3 %s \"create table auth(ID INTEGER, name, pass TEXT, PRIMARY KEY(ID)); insert into auth values(1, '%s', '%s');\"", dbPath, dbUser, dbPass),
 		).Run()
 		if err != nil {
 			return nil, err

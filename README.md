@@ -5,7 +5,9 @@ It was designed for allowing the user to visualize changes in package versions i
 
 ## Build and Setup
 
-In order to setup Differ, you need Go 1.21 and some Sqlite manager (in this section we use the `sqlite3` command line tool).
+### Build and Run from Source
+
+In order to setup Differ from source, you need Go 1.22 and a Sqlite manager (in this section we use the `sqlite3` command line tool).
 First, you need to create a database to store all the images and releases Differ will manage, as well as auth information (see read-only subsection below).
 Using the `sqlite3` tool, run the following commands:
 
@@ -22,14 +24,23 @@ sqlite> select * from auth;
 1|admin_user|admin_password
 ```
 
-Now, build the project with the provided Makefile and run Differ passing the database path as argument.
+Now, all you need to do is use the provided Makefile. Once the binary is built, run it by passing the database path as argument.
 
 ```sh
 $ make
 $ ./differ path/to/database.db
 ```
 
-When setting up Differ in production, you must `export GIN_MODE=release` before running the binary.
+When setting up Differ in production, you must run `export GIN_MODE=release` before running the binary.
+
+### Container Image
+
+Alternatively, you can use the provided container image. In this case, all you need to do is pull it using either Docker or Podman, create a new container and pass the database path as argument. Differ will handle the database setup by using the contents of `admin_user` and `admin_password` environment variables.
+
+```sh
+$ podman pull ghcr.io/vanilla-os/differ:main
+$ podman run --env 'admin_user=user' --env 'admin_password=password' differ path/to/database.db
+```
 
 ## Endpoints
 

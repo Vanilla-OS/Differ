@@ -27,7 +27,7 @@ func TestMain(m *testing.M) {
 	err = exec.Command(
 		"sh",
 		"-c",
-		fmt.Sprintf("sqlite3 %s 'create table auth(\"ID\" INTEGER, name, pass TEXT, PRIMARY KEY(\"ID\")); insert into auth values(1, \"admin\", \"admin\");'", testDBPath),
+		fmt.Sprintf("sqlite3 %s \"create table auth(ID INTEGER, name, pass TEXT, PRIMARY KEY(ID)); insert into auth values(1, 'admin', 'admin');\"", testDBPath),
 	).Run()
 	if err != nil {
 		os.Remove(testDBPath)

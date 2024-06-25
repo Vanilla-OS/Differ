@@ -2,11 +2,13 @@ name: Differ
 id: differ
 stages:
   - id: build
-    base: docker.io/golang:1.21-alpine
+    base: docker.io/golang:1.22-alpine
     singlelayer: false
     labels:
       maintainer: Mateus Melchiades
-    cmd: ["/home/user/differ"]
+    args:
+      GIN_MODE: release
+    entrypoint: ["/home/user/differ"]
     expose:
       "8080": ""
     modules:
@@ -27,7 +29,6 @@ stages:
           - mv /sources/init/core /home/user/core/
           - mv /sources/init/diff /home/user/diff/
           - mv /sources/init/types /home/user/types/
-          - mv /sources/init/vendor /home/user/vendor/
           - rm -rf /sources/init
 
       - name: install-deps
@@ -40,8 +41,8 @@ stages:
         commands:
           - cd /home/user
           - make
-      
+
       - name: cleanup
         type: shell
         commands:
-          - rm -rf main.go go.mod go.sum go.work Makefile core/ types/ vendor/
+          - rm -rf main.go go.mod go.sum go.work Makefile core/ types/
