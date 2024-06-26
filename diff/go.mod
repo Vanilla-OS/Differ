@@ -1,3 +1,3 @@
 module github.com/vanilla-os/differ/diff
 
-go 1.21.4
+go 1.22.4
