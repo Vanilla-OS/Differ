@@ -7,6 +7,12 @@ import (
 	"sync"
 )
 
+const (
+	Upgraded   = -1
+	Downgraded = 1
+	Added      = 2
+)
+
 type Package map[string]string
 
 type PackageDiff struct {
@@ -51,15 +57,15 @@ func CompareVersions(a, b string) int {
 		// If a has component but b doesn't, package was upgraded, unless it's prerelease
 		if aOk && !bOk {
 			if comp == "prerelease" {
-				compResult = -1
+				compResult = Downgraded
 			} else {
-				compResult = 1
+				compResult = Upgraded
 			}
 			break
 		}
 		// If b has component but a doesn't, package was downgraded
 		if !aOk && bOk {
-			compResult = -1
+			compResult = Downgraded
 			break
 		}
 
@@ -73,11 +79,10 @@ func CompareVersions(a, b string) int {
 		} else {
 			abComp = cmp.Compare(aValue, bValue)
 		}
-		if abComp == 0 {
-			continue
+		if abComp != 0 {
+			compResult = abComp
+			break
 		}
-		compResult = abComp
-		break
 	}
 
 	return compResult
@@ -86,7 +91,8 @@ func CompareVersions(a, b string) int {
 func processPackage(pkg, oldVersion, newVersion string, c chan<- struct {
 	PackageDiff
 	int
-}, wg *sync.WaitGroup) {
+}, wg *sync.WaitGroup,
+) {
 	defer wg.Done()
 
 	result := CompareVersions(oldVersion, newVersion)
@@ -103,18 +109,18 @@ func DiffPackages(oldPackages, newPackages Package) ([]PackageDiff, []PackageDif
 	c := make(chan struct {
 		PackageDiff
 		int
-	}, len(oldPackages))
+	}, len(newPackages))
 
-	for pkg, oldVersion := range oldPackages {
+	for pkg, newVersion := range newPackages {
 		wg.Add(1)
 
-		if newVersion, ok := newPackages[pkg]; ok {
+		if oldVersion, ok := oldPackages[pkg]; ok {
 			go processPackage(pkg, oldVersion, newVersion, c, &wg)
 		} else {
 			c <- struct {
 				PackageDiff
 				int
-			}{PackageDiff{pkg, oldVersion, ""}, 2}
+			}{PackageDiff{pkg, newVersion, ""}, Added}
 			wg.Done()
 		}
 	}
@@ -122,8 +128,8 @@ func DiffPackages(oldPackages, newPackages Package) ([]PackageDiff, []PackageDif
 	removed := []PackageDiff{}
 	wg.Add(1)
 	go func() {
-		for pkg, version := range newPackages {
-			if _, ok := oldPackages[pkg]; !ok {
+		for pkg, version := range oldPackages {
+			if _, ok := newPackages[pkg]; !ok {
 				removed = append(removed, PackageDiff{pkg, "", version})
 			}
 		}
@@ -140,11 +146,11 @@ func DiffPackages(oldPackages, newPackages Package) ([]PackageDiff, []PackageDif
 	downgraded := []PackageDiff{}
 	for pkgResult := range c {
 		switch pkgResult.int {
-		case -1:
+		case Downgraded:
 			downgraded = append(downgraded, pkgResult.PackageDiff)
-		case 1:
+		case Upgraded:
 			upgraded = append(upgraded, pkgResult.PackageDiff)
-		case 2:
+		case Added:
 			added = append(added, pkgResult.PackageDiff)
 		}
 	}
