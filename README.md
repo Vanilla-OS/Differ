@@ -48,6 +48,7 @@ $ podman run --env 'admin_user=user' --env 'admin_password=password' differ path
 
 Simple check to see if the server is running correctly.
 
+*Method:* `GET`
 *Endpoint:* `http://[base_url]/status`
 
 *Parameters:* None
@@ -71,6 +72,7 @@ For example, a distro can ship both GNOME and a KDE versions as separate images,
 
 Creates a new image in the dabatase. Every release (see subsection below) is attached to an image.
 
+*Method:* `POST`
 *Endpoint:* `http://[base_url]/images/new`
 
 *Parameters:*
@@ -93,7 +95,8 @@ Creates a new image in the dabatase. Every release (see subsection below) is att
 
 Retrieves information about an image given its name.
 
-**Endpoint:* `http://[base_url]/images/[name]`
+*Method:* `GET`
+*Endpoint:* `http://[base_url]/images/[name]`
 
 *Parameters:* None
 
@@ -119,6 +122,7 @@ Retrieves information about an image given its name.
 
 Retrieves information about all images.
 
+*Method:* `GET`
 *Endpoint:* `http://[base_url]/images`
 
 *Parameters:* None
@@ -156,6 +160,7 @@ A release is a new version of some image, where packages can be added, removed, 
 
 Creates a new release for the given image.
 
+*Method:* `POST`
 *Endpoint:*`http://[base_url]/images/[image]/new`
 
 *Parameters:*
@@ -184,6 +189,7 @@ Creates a new release for the given image.
 
 Retrieves the most recent release from the image.
 
+*Method:* `GET`
 *Endpoint:* `http://[base_url]/images/[image]/latest`
 
 *Parameters:* None
@@ -208,6 +214,7 @@ Retrieves the most recent release from the image.
 
 Searches for a specific release by its digest.
 
+*Method:* `GET`
 *Endpoint:* `http://[base_url]/images/[image]/[digest]`
 
 *Parameters:* None
@@ -234,6 +241,7 @@ Searches for a specific release by its digest.
 
 The most important endpoint in the API. Given two digests, generates a list of changed packages. This information is cached so future queries are nearly instant.
 
+*Method:* `GET`
 *Endpoint:* `http://[base_url]/images/[image]/diff`
 
 *Parameters:*
