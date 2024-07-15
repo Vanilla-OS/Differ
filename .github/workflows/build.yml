@@ -18,7 +18,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: 1.21
+        go-version: 1.22
 
     - name: Install dependencies
       run: |
@@ -38,7 +38,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: 1.21
+        go-version: 1.22
 
     - name: Install test dependencies
       run: |
@@ -47,4 +47,4 @@ jobs:
 
     - name: Test
       run: |
-        go test -v ./...
+        go test -v ./.../...

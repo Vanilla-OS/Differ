@@ -140,7 +140,7 @@ func HandleGetReleaseDiff(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	added, upgraded, downgraded, removed := newRelease.DiffPackages(oldRelease)
+	added, upgraded, downgraded, removed := oldRelease.DiffPackages(newRelease)
 
 	cacheDiffEntry := struct {
 		Added, Upgraded, Downgraded, Removed []diff.PackageDiff
