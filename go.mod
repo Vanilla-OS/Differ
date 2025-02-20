@@ -3,12 +3,12 @@ module github.com/vanilla-os/differ
 go 1.22.4
 
 require (
+	github.com/bytedance/sonic v1.11.9
 	github.com/eko/gocache/store/ristretto/v4 v4.2.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/vanilla-os/differ/diff v0.0.0-20240522191229-8c04d7fdbac7
 	gorm.io/driver/sqlite v1.5.6
 	gorm.io/gorm v1.25.10
-	github.com/bytedance/sonic v1.11.9
 )
 
 require (
@@ -23,7 +23,7 @@ require (
 	github.com/prometheus/common v0.54.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	golang.org/x/exp v0.0.0-20240613232115-7f521ea00fb8 // indirect
-	golang.org/x/sync v0.7.0 // indirect
+	golang.org/x/sync v0.10.0 // indirect
 )
 
 require (
@@ -52,10 +52,10 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	golang.org/x/arch v0.8.0 // indirect
-	golang.org/x/crypto v0.24.0 // indirect
+	golang.org/x/crypto v0.31.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
